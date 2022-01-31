@@ -18,7 +18,7 @@ The web scraper code: **Facebook-scraper & File generator-NEWUI.html**
 Overall Analysis: **FB_OverallAnalysis_Selenium.html**
 Individual Deep Dive: **FB_MVP_Selenium-NEWUI.html**  _These codes are no longer functional as Facebook has altered its UI javascript codes_
 
-## Thesis Results:
+## Thesis Results - Same-day Grocery Delivery Analysis::
 As a part of my thesis, I developed a methodology to ensure grocery orders in Amsterdam are delivered well within 10 minutes. In particular, I used heuristics (read anticipate orders) to augment an existing algorithm and evaluated the performance against the base method.
 The main simulator was built in C++ and is not shared in these files.
 
