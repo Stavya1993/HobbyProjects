@@ -26,11 +26,11 @@ I have to add that I was writing SQL exactly after 2 years and was surprised wit
 
 -Web Scraper:
 To initially comprehend the potential of Roombae, I scraped and analysed data from Facebook Groups. For this purpose, I used selenium, and further utilized python for a deep-dive analysis.
-The web scraper code: ** Facebook-scraper & File generator-NEWUI.html **
-Overall Analysis: ** FB_OverallAnalysis_Selenium.html **
-Individual Deep Dive: ** FB_MVP_Selenium-NEWUI.html **  
+The web scraper code: **Facebook-scraper & File generator-NEWUI.html**
+Overall Analysis: **FB_OverallAnalysis_Selenium.html**
+Individual Deep Dive: **FB_MVP_Selenium-NEWUI.html**  
 
-_ These codes are no longer functional as Facebook has altered its UI javascript codes _
+_These codes are no longer functional as Facebook has altered its UI javascript codes_
 
 ## Thesis Results:
 This is my latest work. I developed and simulated grocery deliveries, where orders can be delivered through out the city of Amsterdam within 10 minutes. 
@@ -40,7 +40,7 @@ The files shared here highlight an analysis of my outputs and in particular my a
 I first explored different anticipation approaches and highlighted them in Performance_methods.html. 
 Further, I deep dived on succesful approaches by implementing several alternative hacks to their computation. I analyse the results in Performance_methods.html.
 Next, I analysed my solutions performance across several realistic instances that I had generated in Python (cannot share because of copyright issues). The results of the same can be seen in Performance_Comparison_Summary.html.
-I further tested my method on extreme scenarios of demand distribution. I compare my method performance in Performance_Comparison_DatasetTypes_Detail.html. _ But more importantly I perform a deep dive EDA on the impact of demand distribution on my system in Demand Data Performance DeepDive.html. _
+I further tested my method on extreme scenarios of demand distribution. I compare my method performance in Performance_Comparison_DatasetTypes_Detail.html. _But more importantly I perform a deep dive EDA on the impact of demand distribution on my system in Demand Data Performance DeepDive.html._
 
 ## Black Jack:
 I built a game in python, I believe it still works. 
