@@ -1,0 +1,270 @@
+select 
+	users.*, 
+	revisits.number_revisit,
+	requests.request_status as request_status, 
+	requests.request_sent,
+	requests.request_sentread,
+	requests.request_received,
+	requests.request_receivedread,
+	other_uni_users.otheruni_usercount,
+	active_chats.total_chats,
+	active_chats.chat_min_activity,
+	active_chats.chat_conversation,
+	activity.activity_count,
+	activity.last_time,
+	last_activity.profiles_onlastactivity,
+	emails.email_id
+from
+	(
+		select 
+			user_id, 
+			full_name, 
+			gender, 
+			university,
+			created_on
+		from uni_student_studentprofile
+	) users
+left join 
+	(
+		select 
+			requests.user_id, 
+			requests.request_status, 
+			sum(requests.requests_sent) as request_sent, 
+			sum(requests.requests_sentread) as request_sentread,
+			sum(requests.requests_received) as request_received, 
+			sum(requests.requests_receivedread) as request_receivedread
+		from
+			(
+				(
+					select 
+						a.owner_id as user_id,
+						a.status as request_status,
+						sum(a.request_count) as requests_sent, 
+						COALESCE(sum(CASE WHEN a.read THEN 1 else 0 end),0) as requests_sentread,
+						0 as requests_received, 
+						0 as requests_receivedread
+					from uni_request_unirequests a
+					group by a.owner_id, a.status
+				) 
+			 union all 
+				(
+						select 
+							a.receiver_id as user_id,
+							a.status as request_status,
+							0 as rexquests_sent,
+							0 as requests_sentread,
+							sum(a.request_count) as requests_received, 
+							COALESCE(sum(CASE WHEN a.read THEN 1 else 0 end),0) as requests_receivedread
+						from uni_request_unirequests a
+						group by a.receiver_id, a.status
+				) 
+			) requests
+		group by user_id, request_status
+	) requests
+on users.user_id = requests.user_id
+left join 
+	(	
+		select university, count(distinct user_id)-1 as otheruni_usercount from uni_student_studentprofile 
+		group by university
+	) other_uni_users
+on users.university = other_uni_users.university
+left join
+	(
+		select 
+			user_id,
+			sum(chat_active) as total_chats,
+			sum(message_exchanged) as chat_min_activity,
+			sum(case when message_sent = 1 and message_received = 1 then 1 else 0 end) as chat_conversation
+		from
+			(
+				select  
+					user_id,
+					room_id,
+					max(1) as chat_active,
+					max(message_sent) as message_sent,
+					max(message_received) as message_received,
+					max(message_exchanged) as message_exchanged
+				from
+					(
+						select 
+							a.user1_id as user_id, 
+							a.id as room_id,
+							(case WHEN b.user_id_id = a.user1_id then 1 else 0 end) as message_sent,
+							(case when b.user_id_id is Not NULL and b.user_id_id != a.user1_id then 1 else 0 end) as message_received,
+							(case when b.user_id_id is not null then 1 else 0 end) as message_exchanged
+						from
+							(
+								select a.* 
+								from uni_chat_uniprivatechatroom as a
+								join
+								(
+									select full_name, user_id
+									from uni_student_studentprofile
+								) b
+								on a.user1_id = b.user_id
+								join
+								(
+									select full_name, user_id
+									from uni_student_studentprofile
+								) d
+								on a.user2_id = d.user_id
+								where b.full_name not in ('Stavya Bhatia','Riddhi Shah') and d.full_name not in ('Stavya Bhatia','Riddhi Shah')
+							) a
+						left join 
+							(
+								select 
+									user_id_id,
+									room_id
+								from uni_chat_uniroomchatmessage 
+								where room_id not in 
+								(
+									select distinct room_id
+									from uni_chat_uniroomchatmessage
+									where user_id_id='5f599477-80a0-4f01-9770-6c256a543044'
+									OR user_id_id='96dc72eb-abc2-40d9-8e8f-3bc23e7a756d'
+									OR room_id in('322','332')
+								) 
+								group by user_id_id, room_id
+							) b
+						on a.id = b.room_id
+					UNION ALL
+						select
+							a.user2_id as user_id, 
+							a.id as room_id,
+							(case  WHEN b.user_id_id = a.user2_id then 1 else 0 end) as message_sent,
+							(case when b.user_id_id is Not NULL and b.user_id_id != a.user2_id then 1 else 0 end) as message_received,
+							(case when b.user_id_id is not null then 1 else 0 end) as message_exchanged
+						from
+							(
+								select a.* 
+								from uni_chat_uniprivatechatroom as a
+								join
+								(
+									select full_name, user_id
+									from uni_student_studentprofile
+								) b
+								on a.user1_id = b.user_id
+								join
+								(
+									select full_name, user_id
+									from uni_student_studentprofile
+								) d
+								on a.user2_id = d.user_id
+								where b.full_name not in ('Stavya Bhatia','Riddhi Shah') and d.full_name not in ('Stavya Bhatia','Riddhi Shah')
+							) a
+						left join 
+							(
+								select 
+									user_id_id,
+									room_id
+								from uni_chat_uniroomchatmessage 
+								where room_id not in 
+								(
+									select distinct room_id
+									from uni_chat_uniroomchatmessage
+									where user_id_id='5f599477-80a0-4f01-9770-6c256a543044'
+									OR user_id_id='96dc72eb-abc2-40d9-8e8f-3bc23e7a756d'
+									OR room_id in('322','332')
+								) 
+								group by user_id_id, room_id
+							) b
+						on a.id = b.room_id
+					) a
+				group by user_id, room_id
+			) active_chats
+		group by user_id
+	) active_chats
+on users.user_id = active_chats.user_id and requests.request_status='Accepted'
+left join
+	(
+		select 
+			a.user,
+			count(*)
+ as activity_count,
+			max(a.time) as last_time
+		from uni_activity_uniactivitylog a
+		group by a.user
+	) activity
+on cast(users.user_id as varchar) = activity.user
+left join
+	(
+		select a.user, a.university, count(distinct b.user) as profiles_onlastactivity from 
+		(
+			select a.user, max(a.time) as last_time, min(b.time) as created_on, d.university  from uni_activity_uniactivitylog a
+			join
+			(
+				select a.user,time from uni_activity_uniactivitylog a
+-- 				where activity_type='Profile Created' 
+			) b
+			on a.user = b.user
+			join 
+				(
+					select user_id, university from uni_student_studentprofile
+				) d
+			on a.user = cast(d.user_id as varchar)
+			group by a.user, d.university
+		)	a
+		join 
+		(
+			select a.user, max(a.time) as last_time, min(b.time) as created_on, d.university  from uni_activity_uniactivitylog a
+			join
+			(
+				select a.user,time from uni_activity_uniactivitylog a
+-- 				where activity_type='Profile Created' 
+			) b
+			on a.user = b.user
+			join 
+				(
+					select user_id, university from uni_student_studentprofile
+				) d
+			on a.user = cast(d.user_id as varchar)
+			group by a.user, d.university
+		)	b
+		on a.last_time > b.created_on and a.university=b.university
+		and a.user!=b.user
+		group by a.user, a.university
+	) last_activity
+on cast(users.user_id as varchar) = last_activity.user 
+and users.university = last_activity.university
+left join 
+	(
+		select distinct student_email_id as email_id, user_id  from uni_authentication_student
+		join 
+		uni_student_studentprofile
+		on student_id = user_sub_id_id
+		where student_email_id!='riddhishah@gmail.com'
+	) emails
+on users.user_id = emails.user_id
+left join 
+	(
+		select 
+			a.user as user_id,
+			max(recurring_visit_counter) as number_revisit
+		from
+		(
+			select 
+				a.user, 
+				sum(case when (DATE_PART('day', new_activity - prev_activity) * 24 + 
+				 DATE_PART('hour', new_activity - prev_activity ) * 60 + 
+				 DATE_PART('minute', new_activity - prev_activity )>30) then 1 else 0 end )
+				 over( partition by a.user order by a.user, new_activity) as recurring_visit_counter
+			from 
+			(
+				select 
+					a.user, 
+					a.time as new_activity,
+					LAG(a.time, 1) over (PARTITION BY a.user order by a.user, a.time) as prev_activity
+				from uni_activity_uniactivitylog a
+				order by a.user, a.time 
+			) a
+		) a
+		left join
+		(
+			select user_id from uni_student_studentprofile
+		) b
+		on cast(b.user_id as varchar)=a.user
+		where b.user_id is not NULL
+		group by a.user
+	) revisits
+on cast(users.user_id as varchar) = revisits.user_id
+

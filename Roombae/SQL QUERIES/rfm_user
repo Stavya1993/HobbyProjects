@@ -1,0 +1,36 @@
+select 
+	a.user as user_id,
+	activity_type,
+	time_activity,
+	recurring_visit_counter,
+	case when recurring_visit_counter = 0 then 'New' else 'Repeat' end as customer_type,
+	case when b.user_id is not NULL then 'Customer' else 'Visitor' end as user_type
+from
+(
+	select 
+		a.user, 
+		activity_type,
+		new_activity as time_activity,
+	-- 	case when (DATE_PART('day', new_activity - prev_activity) * 24 + 
+	-- 	 DATE_PART('hour', new_activity - prev_activity ) * 60 + 
+	-- 	 DATE_PART('minute', new_activity - prev_activity )>30) then 1 else 0 end as recurring_visit,
+		sum(case when (DATE_PART('day', new_activity - prev_activity) * 24 + 
+		 DATE_PART('hour', new_activity - prev_activity ) * 60 + 
+		 DATE_PART('minute', new_activity - prev_activity )>30) then 1 else 0 end )
+		 over( partition by a.user order by a.user, new_activity) as recurring_visit_counter
+	from 
+	(
+		select 
+			a.user, 
+			activity_type, 
+			a.time as new_activity,
+			LAG(a.time, 1) over (PARTITION BY a.user order by a.user, a.time) as prev_activity
+		from uni_activity_uniactivitylog a
+		order by a.user, a.time 
+	) a
+) a
+left join
+(
+ 	select user_id from uni_student_studentprofile
+) b
+on cast(b.user_id as varchar)=a.user

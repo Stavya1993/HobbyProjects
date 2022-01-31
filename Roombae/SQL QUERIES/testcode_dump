@@ -1,0 +1,38 @@
+
+
+
+/* CHECK WITH RIDDHI - LAST MESSAGE DATA
+select a.user_id_id, a.room_id, latest_time, message 
+from
+(
+ 	select * from uni_chat_uniroomchatmessage 
+) a
+join
+(
+	select 
+		user_id_id, 
+		room_id, 
+		max(timestamp) as latest_time,
+		read
+	from uni_chat_uniroomchatmessage 
+	where room_id not in 
+	(
+		select distinct room_id
+		from uni_chat_uniroomchatmessage
+		where user_id_id in ('5f599477-80a0-4f01-9770-6c256a543044','96dc72eb-abc2-40d9-8e8f-3bc23e7a756d')
+	)
+	group by user_id_id, room_id, read
+) b
+on a.user_id_id = b.user_id_id and a.timestamp = b.latest_time;
+
+select * from uni_chat_uniprivatechatroom
+where user1_id not in ('5f599477-80a0-4f01-9770-6c256a543044','96dc72eb-abc2-40d9-8e8f-3bc23e7a756d')
+and user2_id not in('5f599477-80a0-4f01-9770-6c256a543044','96dc72eb-abc2-40d9-8e8f-3bc23e7a756d')
+*/
+
+-- select 
+-- 	activity.user,
+-- 	activity_type,
+-- 	time
+-- from uni_activity_uniactivitylog as activity;
+
