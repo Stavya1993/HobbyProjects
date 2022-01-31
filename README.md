@@ -28,9 +28,7 @@ I have to add that I was writing SQL exactly after 2 years and was surprised wit
 To initially comprehend the potential of Roombae, I scraped and analysed data from Facebook Groups. For this purpose, I used selenium, and further utilized python for a deep-dive analysis.
 The web scraper code: **Facebook-scraper & File generator-NEWUI.html**
 Overall Analysis: **FB_OverallAnalysis_Selenium.html**
-Individual Deep Dive: **FB_MVP_Selenium-NEWUI.html**  
-
-_These codes are no longer functional as Facebook has altered its UI javascript codes_
+Individual Deep Dive: **FB_MVP_Selenium-NEWUI.html**  _These codes are no longer functional as Facebook has altered its UI javascript codes_
 
 ## Thesis Results:
 This is my latest work. I developed and simulated grocery deliveries, where orders can be delivered through out the city of Amsterdam within 10 minutes. 
