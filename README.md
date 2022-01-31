@@ -19,12 +19,12 @@ While I did not complete the competition, I did build a basic regressor and have
 Roombae is a web application I built with a colleague of mine, and can be currently viewed at roombae.com. 
 Once we set up the web app, we found the need to analyse how our users are using the application.
 ### Folders:
--SQL QUERIES
+- SQL QUERIES:
 For this purpose I queried my postgreSql database and created queries for visualizations in Tableau. 
 Unfortunately, I am unable to access my dashboard. However, the **dumpcodes** files should still give you an insight on my SQL skills. 
 I have to add that I was writing SQL exactly after 2 years and was surprised with how much of it I was able to recollect for analysing my apps performance.
 
--Web Scraper:
+- Web Scraper:
 To initially comprehend the potential of Roombae, I scraped and analysed data from Facebook Groups. For this purpose, I used selenium, and further utilized python for a deep-dive analysis.
 The web scraper code: **Facebook-scraper & File generator-NEWUI.html**
 Overall Analysis: **FB_OverallAnalysis_Selenium.html**
